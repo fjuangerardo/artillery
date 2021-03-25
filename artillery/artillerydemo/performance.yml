@@ -1,0 +1,41 @@
+config:
+  target: "https://api.todoist.com"
+  phases:
+    - duration: 3
+      arrivalRate: 1
+      name: "Phase 1"
+  defaults:
+    headers:
+      Authorization: Bearer {{ $processEnvironment.TOKEN }}
+      Content-type: application/json
+      ##processor: "./myProcessor.js"
+scenarios:
+  - flow:
+      - get:
+          url: "/rest/v1/tasks"
+      - post: 
+          url: "/rest/v1/tasks"
+          json:
+            content: "test3"
+          capture:
+            json: "$.id"
+            as: "id"
+      - log: "Current id is {{ id }}"
+      - get:
+          url: "/rest/v1/task/{{ id }}"
+      - post: 
+          url: "/rest/v1/task/{{ id }}"
+          json:
+            content: "wizeline"
+      - post: 
+          url: "/rest/v1/task/{{ id }}"
+          json:
+            completed: true
+      - post: 
+          url: "/rest/v1/task/{{ id }}/close"
+      - post: 
+          url: "/rest/v1/task/{{ id }}/reopen"
+      - delete:
+          url: "/rest/v1/task/{{ id }}"
+
+            
